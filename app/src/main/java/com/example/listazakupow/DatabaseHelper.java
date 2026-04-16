@@ -11,12 +11,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_QUANTITY = "quantity";
-
+    public static final String COLUMN_CATEGORY = "category";
     private static final String CREATE_TABLE =
             "CREATE TABLE " + TABLE_PRODUCTS + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_NAME + " TEXT NOT NULL, " +
-                    COLUMN_QUANTITY + " INTEGER NOT NULL)";
+                    COLUMN_QUANTITY + " INTEGER NOT NULL" + COLUMN_CATEGORY + " TEXT DEFAULT 'inne' )";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

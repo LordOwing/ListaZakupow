@@ -38,6 +38,10 @@
                 android:hint="@string/quantity_hint"
                 android:inputType="number"
                 android:padding="12dp" />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/categorySpinner" />
 
         </LinearLayout>
         <androidx.appcompat.widget.AppCompatButton

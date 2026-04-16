@@ -13,4 +13,14 @@
     <string name="dialog_yes">TAK</string>
     <string name="dialog_no">ANULUJ</string>
     <string name="quantity_prefix">Ilość: </string>
+
+    <string-array name="product_categories">
+        <item>Warzywa</item>
+        <item>Owoce</item>
+        <item>Nabiał</item>
+        <item>Mięso</item>
+        <item>Napoje</item>
+        <item>Piekarnia</item>
+        <item>Inne</item>
+    </string-array>
 </resources>
