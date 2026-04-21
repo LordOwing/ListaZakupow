@@ -1,18 +1,10 @@
 <resources>
-    <string name="app_name">Lista Zakupów</string>
+    <string name="app_name">Lista Zakupów Pro</string>
     <string name="product_name_hint">Wpisz nazwę produktu...</string>
     <string name="quantity_hint">Ilość</string>
     <string name="add_button">DODAJ</string>
     <string name="clear_button">WYCZYŚĆ LISTĘ</string>
-    <string name="empty_name_error">Nazwa produktu nie może być pusta</string>
-    <string name="invalid_quantity_error">Ilość musi być większa od zera</string>
-    <string name="product_added">Produkt dodany</string>
-    <string name="list_cleared">Lista wyczyszczona</string>
-    <string name="clear_dialog_title">Potwierdzenie</string>
-    <string name="clear_dialog_message">Czy na pewno chcesz usunąć wszystkie produkty?</string>
-    <string name="dialog_yes">TAK</string>
-    <string name="dialog_no">ANULUJ</string>
-    <string name="quantity_prefix">Ilość: </string>
+    <string name="category_label">Kategoria:</string>
 
     <string-array name="product_categories">
         <item>Warzywa</item>

@@ -3,52 +3,56 @@ package com.example.listazakupow;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
-    private List<ProductItem> products;
-
-    public ProductAdapter(List<ProductItem> products) {
-        this.products = products;
+    public interface OnDelete {
+        void onDelete(ProductItem p);
     }
 
-    @NonNull
-    @Override
-    public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
-        return new ProductViewHolder(view);
+    private List<ProductItem> list;
+    private OnDelete listener;
+
+    public ProductAdapter(List<ProductItem> list, OnDelete listener) {
+        this.list = list;
+        this.listener = listener;
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        ProductItem product = products.get(position);
-        holder.productName.setText(product.getItemName());
-        holder.productQuantity.setText("Ilość: " + product.getItemQuantity());
-    }
+    public static class VH extends RecyclerView.ViewHolder {
+        TextView name, qty, cat;
+        ImageButton delete;
 
-    @Override
-    public int getItemCount() {
-        return products.size();
-    }
-
-    public void updateProducts(List<ProductItem> newProducts) {
-        this.products = newProducts;
-        notifyDataSetChanged();
-    }
-
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView productName;
-        TextView productQuantity;
-
-        public ProductViewHolder(@NonNull View itemView) {
-            super(itemView);
-            productName = itemView.findViewById(R.id.productItemName);
-            productQuantity = itemView.findViewById(R.id.itemQuantity);
+        public VH(View v) {
+            super(v);
+            name = v.findViewById(R.id.tvProductName);
+            qty = v.findViewById(R.id.tvQuantity);
+            cat = v.findViewById(R.id.tvCategory);
+            delete = v.findViewById(R.id.btnDelete);
         }
     }
+
+    @Override
+    public VH onCreateViewHolder(ViewGroup p, int v) {
+        return new VH(LayoutInflater.from(p.getContext())
+                .inflate(R.layout.item_product, p, false));
+    }
+
+    @Override
+    public void onBindViewHolder(VH h, int i) {
+        ProductItem p = list.get(i);
+        h.name.setText(p.getName());
+        h.qty.setText("Ilość: " + p.getQuantity());
+        h.cat.setText("Kategoria: " + p.getCategory());
+
+        h.delete.setOnClickListener(v -> listener.onDelete(p));
+    }
+
+    @Override
+    public int getItemCount() { return list.size(); }
 }

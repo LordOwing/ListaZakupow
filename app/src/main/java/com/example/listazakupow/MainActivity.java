@@ -17,124 +17,65 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
-    private EditText productNameInput;
-    private EditText quantityInput;
-    private Button addButton;
-    private Button clearButton;
-    private RecyclerView productsRecycler;
-    private ProductAdapter adapter;
-    private DatabaseHelper dbHelper;
-    private List<ProductItem> products;
-    private Spinner categorySpinner;
-    private ArrayAdapter spinnerAdapter;
-    private String category;
+
+    EditText name, qty;
+    Spinner spinner;
+    RecyclerView rv;
+    DatabaseHelper db;
+    ProductAdapter adapter;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
         setContentView(R.layout.activity_main);
-        categorySpinner = findViewById(R.id.categorySpinner);
-        productNameInput = findViewById(R.id.productName);
-        quantityInput = findViewById(R.id.quantity);
-        addButton = findViewById(R.id.addButton);
-        clearButton = findViewById(R.id.clearButton);
-        productsRecycler = findViewById(R.id.productsRecycler);
 
-        dbHelper = new DatabaseHelper(this);
+        name = findViewById(R.id.etProductName);
+        qty = findViewById(R.id.etProductQuantity);
+        spinner = findViewById(R.id.spinnerCategory);
+        rv = findViewById(R.id.rvProducts);
 
-        productsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        db = new DatabaseHelper(this);
 
-        loadProducts();
+        rv.setLayoutManager(new LinearLayoutManager(this));
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addProduct();
-            }
+        load();
+
+        findViewById(R.id.btnAdd).setOnClickListener(v -> add());
+
+        findViewById(R.id.btnClear).setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Potwierdzenie")
+                    .setMessage("Usunąć wszystko?")
+                    .setPositiveButton("TAK", (d,w)->{
+                        db.clearAll();
+                        load();
+                    })
+                    .setNegativeButton("NIE", null)
+                    .show();
         });
+    }
 
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showClearDialog();
-            }
+    void load() {
+        adapter = new ProductAdapter(db.getAllProducts(), p -> {
+            db.deleteProduct(p.getName());
+            load();
         });
-        spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.product_categories, android.R.layout.simple_spinner_dropdown_item);
-        categorySpinner.setAdapter(spinnerAdapter);
+        rv.setAdapter(adapter);
     }
 
+    void add() {
+        String n = name.getText().toString();
+        String q = qty.getText().toString();
 
-    private void loadProducts() {
-        products = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_PRODUCTS, null);
+        if(n.isEmpty() || q.isEmpty()) return;
 
-        int nameColumnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME);
-        int quantityColumnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY);
+        db.insertProduct(n, Integer.parseInt(q),
+                spinner.getSelectedItem().toString());
 
-        if (cursor.moveToFirst()) {
-            do {
-                String name = cursor.getString(nameColumnIndex);
-                int quantity = cursor.getInt(quantityColumnIndex);
-                products.add(new ProductItem(name, quantity));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
+        name.setText("");
+        qty.setText("");
 
-        adapter = new ProductAdapter(products);
-        productsRecycler.setAdapter(adapter);
-    }
-
-    private void addProduct() {
-        String name = productNameInput.getText().toString().trim();
-        String quantityStr = quantityInput.getText().toString().trim();
-
-        if (name.isEmpty()) {
-            Toast.makeText(this, "Nazwa produktu nie może być pusta", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int quantity;
-        try {
-            quantity = Integer.parseInt(quantityStr);
-            if (quantity <= 0) {
-                Toast.makeText(this, "Ilość musi być większa od zera", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Podaj prawidłową ilość", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        category = categorySpinner.
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_NAME, name);
-        values.put(DatabaseHelper.COLUMN_QUANTITY, quantity);
-        db.insert(DatabaseHelper.TABLE_PRODUCTS, null, values);
-        db.close();
-
-        loadProducts();
-
-        productNameInput.setText("");
-        quantityInput.setText("");
-
-        Toast.makeText(this, "Produkt dodany", Toast.LENGTH_SHORT).show();
-    }
-
-    private void showClearDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Potwierdzenie")
-                .setMessage("Czy na pewno chcesz usunąć wszystkie produkty?")
-                .setPositiveButton("TAK", (dialog, which) -> {
-                    SQLiteDatabase db = dbHelper.getWritableDatabase();
-                    db.delete(DatabaseHelper.TABLE_PRODUCTS, null, null);
-                    db.close();
-                    loadProducts();
-                    Toast.makeText(MainActivity.this, "Lista wyczyszczona", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("ANULUJ", (dialog, which) -> dialog.dismiss())
-                .show();
+        load();
     }
 }

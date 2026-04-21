@@ -1,24 +1,16 @@
 package com.example.listazakupow;
-
 public class ProductItem {
-    private  String itemName;
-    private int itemQuantity;
-    private String itemCategory;
-    public ProductItem(String itemName, int itemQuantity, String itemCategory){
-        this.itemCategory = itemCategory;
-        this.itemName = itemName;
-        this.itemQuantity = itemQuantity;
+    private String name;
+    private int quantity;
+    private String category;
+
+    public ProductItem(String name, int quantity, String category) {
+        this.name = name;
+        this.quantity = quantity;
+        this.category = category;
     }
 
-    public int getItemQuantity() {
-        return itemQuantity;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public String getItemCategory() {
-        return itemCategory;
-    }
+    public String getName() { return name; }
+    public int getQuantity() { return quantity; }
+    public String getCategory() { return category; }
 }
